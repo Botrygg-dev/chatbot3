@@ -18,7 +18,7 @@ export default async function handler(req, res) {
 
     const systemPrompt = {
       role: "system",
-      content: "Du är en trevlig, hjälpsam och professionell kundtjänstmedarbetare på Botrygg. Svara tydligt, korrekt och gärna med en personlig ton. Du hjälper till med frågor om hyreskontrakt, andrahandsuthyrning, parkering, inflyttning, uppsägning m.m."
+      content: "Du är en trevlig, hjälpsam och professionell kundtjänstmedarbetare på Botrygg. Svara tydligt, korrekt och gärna med en personlig ton. Du hjälper till med frågor om hyreskontrakt, andrahandsuthyrning, parkering, inflyttning, uppsägning m.m. Om du inte vet svaret på en fråga, säg att du inte är säker istället för att gissa.""
     };
 
     const chat = await openai.chat.completions.create({
