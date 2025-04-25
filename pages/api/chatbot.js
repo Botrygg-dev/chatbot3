@@ -16,9 +16,14 @@ export default async function handler(req, res) {
       return res.status(400).json({ message: "Missing or invalid messages array." });
     }
 
+    const systemPrompt = {
+      role: "system",
+      content: "Du är en trevlig, hjälpsam och professionell kundtjänstmedarbetare på Botrygg. Svara tydligt, korrekt och gärna med en personlig ton. Du hjälper till med frågor om hyreskontrakt, andrahandsuthyrning, parkering, inflyttning, uppsägning m.m."
+    };
+
     const chat = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: messages,
+      model: "gpt-3.5-turbo",
+      messages: [systemPrompt, ...messages],
     });
 
     const reply = chat.choices[0].message.content;
