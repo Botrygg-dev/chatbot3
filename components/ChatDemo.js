@@ -76,7 +76,7 @@ export default function ChatDemo() {
         `}
       </style>
       <div style={{ background: '#aa1e2c', color: 'white', padding: 10 }}>
-        <h2>Chatta med Bosse 🤖</h2>
+        <h2>Chatta med vår digitala medarbetare Bosse </h2>
       </div>
       <div style={{ height: 300, overflowY: 'scroll', background: '#f9f9f9', padding: 10 }}>
         {messages.map((msg, i) => (
