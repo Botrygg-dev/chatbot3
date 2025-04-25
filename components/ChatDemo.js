@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import Image from 'next/image';
+import logo from '../public/logga.png';
 
 export default function ChatDemo() {
   const [input, setInput] = useState("");
@@ -9,14 +11,24 @@ export default function ChatDemo() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
+  const playSound = () => {
+    const audio = new Audio("/pop.mp3");
+    audio.play();
+  };
+
   const sendMessage = async () => {
     if (!input.trim()) return;
     setLoading(true);
-    setIsTyping(true);
 
     const userMessage = { from: "user", text: input };
     const updatedMessages = [...messages, userMessage];
-    setMessages([...updatedMessages, { from: "system", text: "Bosse skriver..." }]);
+    setMessages([...updatedMessages]);
+
+    setTimeout(() => setIsTyping(true), 2000);
 
     try {
       const formattedForAPI = updatedMessages
@@ -37,23 +49,21 @@ export default function ChatDemo() {
       try {
         data = JSON.parse(text);
       } catch (e) {
-        setMessages(prev => [...prev.filter(m => m.text !== "Bosse skriver..."), { from: "bot", text: "Kunde inte läsa svaret från servern." }]);
+        setMessages(prev => [...prev, { from: "bot", text: "Kunde inte läsa svaret från servern." }]);
+        setIsTyping(false);
         return;
       }
 
-      setMessages(prev => [...prev.filter(m => m.text !== "Bosse skriver..."), { from: "bot", text: data.reply || "(Tomt svar från API)" }]);
+      setMessages(prev => [...prev, { from: "bot", text: data.reply || "(Tomt svar från API)" }]);
+      playSound();
     } catch (error) {
-      setMessages(prev => [...prev.filter(m => m.text !== "Bosse skriver..."), { from: "bot", text: "Fel vid kontakt med servern." }]);
+      setMessages(prev => [...prev, { from: "bot", text: "Fel vid kontakt med servern." }]);
     } finally {
       setLoading(false);
       setIsTyping(false);
       setInput("");
     }
   };
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
 
   return (
     <div style={{ maxWidth: 500, margin: '0 auto', border: '1px solid #ddd', borderRadius: 10, overflow: 'hidden', boxShadow: '0 0 10px rgba(0,0,0,0.1)' }}>
@@ -75,8 +85,9 @@ export default function ChatDemo() {
           }
         `}
       </style>
-      <div style={{ background: '#aa1e2c', color: 'white', padding: 10 }}>
-        <h2>Chatta med vår digitala medarbetare Bosse </h2>
+      <div style={{ background: '#aa1e2c', color: 'white', padding: 10, display: 'flex', alignItems: 'center', gap: 10 }}>
+        <Image src={logo} alt="Botrygg logotyp" width={32} height={32} />
+        <h2 style={{ fontSize: 18 }}>Chatta med Bosse</h2>
       </div>
       <div style={{ height: 300, overflowY: 'scroll', background: '#f9f9f9', padding: 10 }}>
         {messages.map((msg, i) => (
@@ -97,7 +108,7 @@ export default function ChatDemo() {
         ))}
         {isTyping && (
           <div style={{ textAlign: 'left', fontStyle: 'italic', color: '#999', marginLeft: 10 }}>
-            Bosse skriver <span className="dot-flash"><span>.</span><span>.</span><span>.</span></span>
+            Bosse skriver<span className="dot-flash"><span>.</span><span>.</span><span>.</span></span>
           </div>
         )}
         <div ref={messagesEndRef} />
